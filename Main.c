@@ -8,38 +8,25 @@ struct NODE *cwd;
 char *cmd[] = {"mkdir", "rmdir", "ls", "cd", "pwd", "touch", "rm",
  "menu", "tree", "quit", NULL};
 
-/*
-Uses the user's input to determine what command will be used
-Called by the switch case in main
-*/
-// Lists the contents of the current directory or specified path
+
 void ls(char* pathName) {
     printf("LS: List contents of %s\n", pathName);
-    // Add actual functionality here
 }
 
-// Changes the current working directory to the specified path
 void cd(char* pathName) {
     printf("CD: Change directory to %s\n", pathName);
-    // Add actual functionality here
 }
 
-// Prints the current working directory path
 void pwd() {
     printf("PWD: Current working directory is ");
-    // Add actual functionality here to print the current working directory path
 }
 
-// Creates a file at the specified path
 void touch(char* pathName) {
     printf("TOUCH: Create file %s\n", pathName);
-    // Add actual functionality here
 }
 
-// Removes the file at the specified path
 void rm(char* pathName) {
     printf("RM: Remove file %s\n", pathName);
-    // Add actual functionality here
 }
 
 
@@ -55,9 +42,7 @@ int findCMD(char* command){
     return -1;
 }
 
-/*
-Initializes the root node
-*/
+
 void initialize(){
     root = (struct NODE *)malloc(sizeof(struct NODE));
     root->parentPtr = NULL;
@@ -68,10 +53,7 @@ void initialize(){
     cwd = root;
 }
 
-/*
-Splits the path into dirName and baseName.
-Returns the parent directory node of the baseName.
-*/
+
 struct NODE* splitPath(char* pathName, char* baseName, char* dirName) {
     if (strcmp(pathName, "/") == 0) {
         strcpy(dirName, "/");
@@ -79,25 +61,21 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName) {
         return root;
     }
 
-    // Copy pathName to dirName to manipulate it
     strcpy(dirName, pathName);
     char* lastSlash = strrchr(dirName, '/');
 
     if (lastSlash) {
-        // Split path at the last slash
         strcpy(baseName, lastSlash + 1);
         if (lastSlash == dirName) {
             strcpy(dirName, "/");
         } else {
-            *lastSlash = '\0';  // Terminate dirName at the last slash
+            *lastSlash = '\0';  
         }
     } else {
-        // If no slash is present, it means the baseName is the pathName
         strcpy(baseName, pathName);
         strcpy(dirName, "");
     }
 
-    // Navigate to the directory specified by dirName
     struct NODE* parent = root;
     if (strcmp(dirName, "/") != 0 && strlen(dirName) > 0) {
         char* token = strtok(dirName, "/");
@@ -122,9 +100,7 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName) {
     return parent;
 }
 
-/*
-Creates a directory with the given pathName.
-*/
+
 void mkdir(char* pathName) {
     if (strcmp(pathName, "/") == 0) {
         printf("MKDIR ERROR: no path provided\n");
@@ -135,11 +111,9 @@ void mkdir(char* pathName) {
     struct NODE* parent = splitPath(pathName, baseName, dirName);
 
     if (!parent) {
-        // Parent does not exist or path is invalid
         return;
     }
 
-    // Check if a node with baseName already exists in parent
     struct NODE* child = parent->childPtr;
     while (child) {
         if (strcmp(child->name, baseName) == 0 && child->fileType == 'D') {
@@ -149,7 +123,6 @@ void mkdir(char* pathName) {
         child = child->siblingPtr;
     }
 
-    // Create the new directory node
     struct NODE* newDir = (struct NODE*)malloc(sizeof(struct NODE));
     strcpy(newDir->name, baseName);
     newDir->fileType = 'D';
@@ -157,7 +130,6 @@ void mkdir(char* pathName) {
     newDir->childPtr = NULL;
     newDir->siblingPtr = NULL;
 
-    // Add the new node as a child of the parent
     if (parent->childPtr == NULL) {
         parent->childPtr = newDir;
     } else {
@@ -179,7 +151,6 @@ int main() {
     char command[16];
     char pathName[64];
 
-    // This while loop runs until 'quit' is entered
     while (1) {
         strcpy(pathName, "/");
         fprintf(stderr, "input a command line: ");
@@ -204,12 +175,10 @@ int main() {
     }
 }
 
-// Prints all possible commands that the user can use
 void menu() {
     printf("Commands:\nmkdir [pathname], touch [pathname], rmdir [pathname], rm [pathname], ls [pathname], cd [pathname], pwd, menu, printTree, quit\n");
 }
 
-// Prints the file system in a tree-like format
 void printTree() {
     printf("%s", root->name);
     struct NODE *directory = root->childPtr;
@@ -217,7 +186,6 @@ void printTree() {
     printHelper(directory, 0);
 }
 
-// Recursive function helper to print the tree
 void printHelper(struct NODE *directory, int depth) {
     while (directory != NULL) {
         struct NODE *temp = directory;
@@ -252,7 +220,6 @@ void printHelper(struct NODE *directory, int depth) {
     }  
 }
 
-// Quits the program
 int quit() {
     return 0;
 }
